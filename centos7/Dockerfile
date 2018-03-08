@@ -1,15 +1,15 @@
 FROM centos:7
 MAINTAINER Matt McCormick <matt.mccormick@kitware.com>
 
-ENV CC=/opt/rh/devtoolset-4/root/usr/bin/gcc \
-    CXX=/opt/rh/devtoolset-4/root/usr/bin/g++ \
-    FC=/opt/rh/devtoolset-4/root/usr/bin/gfortran \
-    PATH=/opt/rh/devtoolset-4/root/usr/bin${PATH:+:${PATH}} \
+ENV CC=/opt/rh/devtoolset-7/root/usr/bin/gcc \
+    CXX=/opt/rh/devtoolset-7/root/usr/bin/g++ \
+    FC=/opt/rh/devtoolset-7/root/usr/bin/gfortran \
+    PATH=/opt/rh/devtoolset-7/root/usr/bin${PATH:+:${PATH}} \
     CMAKE_VERSION=3.10.2 \
     GIT_VERSION=2.16.2 \
     # http://bugs.python.org/issue19846
     # > At the moment, setting "LANG=C" on a Linux system *fundamentally breaks Python 3*, and that's not OK.
-    LANG=C.UTF-8 \
+    LANG=C \
     PYTHON_VERSION=3.6.4
 
 RUN yum update -y && \
@@ -38,10 +38,10 @@ RUN yum update -y && \
   #
   yum install -y centos-release-scl && \
   yum install -y \
-   devtoolset-4-gcc \
-   devtoolset-4-binutils \
-   devtoolset-4-gcc-gfortran \
-   devtoolset-4-gcc-c++ \
+   devtoolset-7-gcc \
+   devtoolset-7-binutils \
+   devtoolset-7-gcc-gfortran \
+   devtoolset-7-gcc-c++ \
   && \
   #
   # Install CMake
@@ -74,37 +74,37 @@ RUN yum update -y && \
   #
   # Build and install git from source.
   #
-  cd /usr/src && \
-  wget https://www.kernel.org/pub/software/scm/git/git-${GIT_VERSION}.tar.gz && \
-  tar xvzf git-${GIT_VERSION}.tar.gz && \
-  cd git-${GIT_VERSION} && \
-  ./configure --prefix=/usr/local && \
-  make && \
-  make install && \
-  cd .. && rm -rf git-${GIT_VERSION}* && \
+#  cd /usr/src && \
+#  wget https://www.kernel.org/pub/software/scm/git/git-${GIT_VERSION}.tar.gz && \
+#  tar xvzf git-${GIT_VERSION}.tar.gz && \
+#  cd git-${GIT_VERSION} && \
+#  ./configure --prefix=/usr/local && \
+#  make && \
+#  make install && \
+#  cd .. && rm -rf git-${GIT_VERSION}* && \
   #
   # Build and install Python from source.
   #
-  cd /usr/src && \
-  wget https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz && \
-  tar xvzf Python-${PYTHON_VERSION}.tgz && \
-  cd Python-${PYTHON_VERSION} && \
-  ./configure --enable-shared && \
-  make -j$(grep -c processor /proc/cpuinfo) && \
-  make install && \
-  ldconfig && \
-  cd .. && rm -rf Python-${PYTHON_VERSION}* && \
-  cd /usr/local/bin && \
-	ln -s pip3 pip && \
-	ln -s idle3 idle && \
-	ln -s pydoc3 pydoc && \
-	ln -s python3 python && \
-  ln -s python3-config python-config && \
-  # Copied from https://github.com/docker-library/python/blob/master/3.6/stretch/slim/Dockerfile
-  (find /usr/local/lib -depth \
-      \( -type d -a -name test -o -name tests \) \
-   -o \( -type f -a -name '*.pyc' -o -name '*.pyo' \) \
-   -exec rm -rf '{}' +;) && \
+#  cd /usr/src && \
+#  wget https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz && \
+#  tar xvzf Python-${PYTHON_VERSION}.tgz && \
+#  cd Python-${PYTHON_VERSION} && \
+#  ./configure --enable-shared && \
+#  make -j$(grep -c processor /proc/cpuinfo) && \
+#  make install && \
+#  ldconfig && \
+#  cd .. && rm -rf Python-${PYTHON_VERSION}* && \
+#  cd /usr/local/bin && \
+#	ln -s pip3 pip && \
+#	ln -s idle3 idle && \
+#	ln -s pydoc3 pydoc && \
+#	ln -s python3 python && \
+#  ln -s python3-config python-config && \
+#  # Copied from https://github.com/docker-library/python/blob/master/3.6/stretch/slim/Dockerfile
+#  (find /usr/local/lib -depth \
+#      \( -type d -a -name test -o -name tests \) \
+#   -o \( -type f -a -name '*.pyc' -o -name '*.pyo' \) \
+#   -exec rm -rf '{}' +;) && \
   #
   # cleanup
   #
